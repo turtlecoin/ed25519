@@ -19,6 +19,11 @@ else()
     project(ed25519 VERSION "${LIB_VERSION_STRING}" LANGUAGES CXX)
 endif()
 
+if(CMAKE_SIZEOF_VOID_P EQUAL 8)
+    message(STATUS "ED25519: Activating 64-bit enhancements...")
+    add_definitions(-D__USE_64BIT__)
+endif()
+
 ## This section describes our general CMake setup options
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_SKIP_INSTALL_RULES OFF FORCE)
@@ -53,6 +58,7 @@ endif()
 include_directories(include)
 
 set(ED25519_SRC
+    src/donna128_scalarmult.cpp
     src/equal.cpp
     src/fe_0.cpp
     src/fe_1.cpp

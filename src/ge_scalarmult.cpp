@@ -29,6 +29,33 @@ For more information, please refer to <http://unlicense.org/>
 
 // adapted from ge_scalarmult_base.c
 
+#if defined __SIZEOF_INT128__ && defined __USE_64BIT__
+void donna128_scalarmult_wrapper(ge_p1p1 *r, const unsigned char *a, const ge_p3 *A)
+{
+    uint8_t result_bytes[32];
+
+    uint8_t point[32];
+
+    // convert the p3 to bytes as donna128 works with bytes
+    ge_p3_tobytes(point, A);
+
+    // perform the calc
+    donna128_scalarmult(result_bytes, a, point);
+
+    ge_p3 result_p3;
+
+    // donna returns bytes, but we need a p3
+    ge_frombytes_negate_vartime(&result_p3, result_bytes);
+
+    ge_p1p1 result_p1p1;
+
+    ge_cached zero;
+
+    // quick hack -- add a zero point to the point to get a p1p1
+    ge_add(r, &result_p3, &zero);
+}
+#endif
+
 /*
 h = a * A
 where a = a[0]+256*a[1]+...+256^31 a[31]
@@ -37,7 +64,7 @@ A is a public point
 Preconditions:
   a[31] <= 127
 */
-void ge_scalarmult(ge_p1p1 *t, const unsigned char *a, const ge_p3 *A)
+void ref10_scalarmult(ge_p1p1 *t, const unsigned char *a, const ge_p3 *A)
 {
     signed char e[64];
     int carry, carry2, i;

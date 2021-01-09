@@ -246,9 +246,26 @@ int main()
         [&G_point3, &scalar]() {
             ge_p1p1 point;
 
+            ref10_scalarmult(&point, scalar, &G_point3);
+        },
+        "ref10_scalarmult");
+
+#if defined __SIZEOF_INT128__ && defined __USE_64BIT__
+    benchmark(
+        [&scalar, &G]() {
+            uint8_t bytes[32];
+
+            donna128_scalarmult(bytes, scalar, G);
+        }, "donna128_scalarmult");
+#endif
+
+    benchmark(
+        [&G_point3, &scalar]() {
+            ge_p1p1 point;
+
             ge_scalarmult(&point, scalar, &G_point3);
         },
-        "ge_scalarmult");
+        "#ge_scalarmult#");
 
     benchmark(
         [&G_point3, &scalar]() {

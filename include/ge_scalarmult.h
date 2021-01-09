@@ -28,6 +28,10 @@ For more information, please refer to <http://unlicense.org/>
 #ifndef ED25519_GE_SCALARMULT_H
 #define ED25519_GE_SCALARMULT_H
 
+#if defined __SIZEOF_INT128__ && defined __USE_64BIT__
+#include "donna128_scalarmult.h"
+#endif
+
 #include "equal.h"
 #include "fe_copy.h"
 #include "fe_neg.h"
@@ -35,13 +39,22 @@ For more information, please refer to <http://unlicense.org/>
 #include "ge_add.h"
 #include "ge_cached_0.h"
 #include "ge_cached_cmov.h"
+#include "ge_frombytes_negate_vartime.h"
 #include "ge_p1p1_to_p2.h"
 #include "ge_p1p1_to_p3.h"
 #include "ge_p2_0.h"
 #include "ge_p2_dbl.h"
 #include "ge_p3_to_cached.h"
+#include "ge_p3_tobytes.h"
 #include "negative.h"
 
-void ge_scalarmult(ge_p1p1 *t, const unsigned char *a, const ge_p3 *A);
+void ref10_scalarmult(ge_p1p1 *r, const unsigned char *a, const ge_p3 *A);
+
+#if defined __SIZEOF_INT128__ && defined __USE_64BIT__
+void donna128_scalarmult_wrapper(ge_p1p1 *r, const unsigned char *a, const ge_p3 *A);
+#define ge_scalarmult(out, scalar, point) donna128_scalarmult_wrapper(out, scalar, point)
+#else
+#define ge_scalarmult(out, scalar, point) ref10_scalarmult(out, scalar, point)
+#endif
 
 #endif // ED25519_GE_SCALARMULT_H

@@ -31,6 +31,8 @@ For more information, please refer to <http://unlicense.org/>
 #include "fe.h"
 
 #include <cstring>
+#include <iostream>
+#include <string>
 
 typedef struct GeP2
 {
@@ -126,5 +128,132 @@ typedef struct GeCached
 } ge_cached;
 
 typedef ge_cached ge_dsmp[8];
+
+namespace std {
+    inline ostream &operator<<(ostream &os, const ge_p2 &value)
+    {
+        os << "ge_p2: " << std::endl;
+
+        os << "\tX: ";
+        for (const auto &val : value.X)
+            os << std::to_string(val) << ",";
+        os << std::endl;
+
+        os << "\tY: ";
+        for (const auto &val : value.Y)
+            os << std::to_string(val) << ",";
+        os << std::endl;
+
+        os << "\tZ: ";
+        for (const auto &val : value.Z)
+            os << std::to_string(val) << ",";
+        os << std::endl;
+
+        return os;
+    }
+
+    inline ostream &operator<<(ostream &os, const ge_p3 &value)
+    {
+        os << "ge_p3: " << std::endl;
+
+        os << "\tX: ";
+        for (const auto &val : value.X)
+            os << std::to_string(val) << ",";
+        os << std::endl;
+
+        os << "\tY: ";
+        for (const auto &val : value.Y)
+            os << std::to_string(val) << ",";
+        os << std::endl;
+
+        os << "\tZ: ";
+        for (const auto &val : value.Z)
+            os << std::to_string(val) << ",";
+        os << std::endl;
+
+        os << "\tT: ";
+        for (const auto &val : value.T)
+            os << std::to_string(val) << ",";
+        os << std::endl;
+
+        return os;
+    }
+
+    inline ostream &operator<<(ostream &os, const ge_p1p1 &value)
+    {
+        os << "ge_p1p1: " << std::endl;
+
+        os << "\tX: ";
+        for (const auto &val : value.X)
+            os << std::to_string(val) << ",";
+        os << std::endl;
+
+        os << "\tY: ";
+        for (const auto &val : value.Y)
+            os << std::to_string(val) << ",";
+        os << std::endl;
+
+        os << "\tZ: ";
+        for (const auto &val : value.Z)
+            os << std::to_string(val) << ",";
+        os << std::endl;
+
+        os << "\tT: ";
+        for (const auto &val : value.T)
+            os << std::to_string(val) << ",";
+        os << std::endl;
+
+        return os;
+    }
+
+    inline ostream &operator<<(ostream &os, const ge_precomp &value)
+    {
+        os << "ge_precomp: " << std::endl;
+
+        os << "\typlusx: ";
+        for (const auto &val : value.yplusx)
+            os << std::to_string(val) << ",";
+        os << std::endl;
+
+        os << "\tyminusx: ";
+        for (const auto &val : value.yminusx)
+            os << std::to_string(val) << ",";
+        os << std::endl;
+
+        os << "\txy2d: ";
+        for (const auto &val : value.xy2d)
+            os << std::to_string(val) << ",";
+        os << std::endl;
+
+        return os;
+    }
+
+    inline ostream &operator<<(ostream &os, const ge_cached &value)
+    {
+        os << "ge_cached: " << std::endl;
+
+        os << "\tYplusX: ";
+        for (const auto &val : value.YplusX)
+            os << std::to_string(val) << ",";
+        os << std::endl;
+
+        os << "\tYminusX: ";
+        for (const auto &val : value.YminusX)
+            os << std::to_string(val) << ",";
+        os << std::endl;
+
+        os << "\tZ: ";
+        for (const auto &val : value.Z)
+            os << std::to_string(val) << ",";
+        os << std::endl;
+
+        os << "\tT2d: ";
+        for (const auto &val : value.T2d)
+            os << std::to_string(val) << ",";
+        os << std::endl;
+
+        return os;
+    }
+}
 
 #endif // ED25519_GE_H
