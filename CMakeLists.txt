@@ -12,11 +12,12 @@ set(LIB_PATCH_VERSION "0")
 set(LIB_VERSION_STRING "${LIB_MAJOR_VERSION}.${LIB_MINOR_VERSION}.${LIB_PATCH_VERSION}")
 
 if(CMAKE_VERSION VERSION_LESS 3.0)
-    project(ed25519 CXX)
+    project(ed25519 C)
     enable_language(C)
+    enable_language(CXX)
 else()
     cmake_policy(SET CMP0048 NEW)
-    project(ed25519 VERSION "${LIB_VERSION_STRING}" LANGUAGES C)
+    project(ed25519 VERSION "${LIB_VERSION_STRING}" LANGUAGES C CXX)
 endif()
 
 ## This section describes our general CMake setup options
@@ -35,13 +36,24 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(STATIC ON CACHE BOOL FORCE "Link libraries statically? Forced to ON")
 add_definitions(-DSTATICLIB)
 
+option(BUILD_BENCHMARK "Build benchmark testing tool" OFF)
+if(DEFINED ENV${BUILD_BENCHMARK})
+    set(BUILD_BENCHMARK $ENV{BUILD_BENCHMARK})
+    message(STATUS "ED25519: Activating benchmark testing tool")
+endif()
+
+if(MSVC)
+    add_definitions("/EHsc -std:c++17 /DWIN32_LEAN_AND_MEAN /O2 /wd4267")
+endif()
+
 if(NOT MSVC)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -Wno-c99-compat")
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c11 -O3")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3")
 endif()
 
 include_directories(include)
 
-set(ED25119_SRC
+set(ED25519_SRC
     src/equal.c
     src/fe_0.c
     src/fe_1.c
@@ -104,10 +116,18 @@ set(ED25119_SRC
     src/slide.c
 )
 
-add_library(ed25519 STATIC ${ED25119_SRC})
+add_library(ed25519 STATIC ${ED25519_SRC})
 
 set_property(TARGET ed25519 PROPERTY C_STANDARD 90)
 set_property(TARGET ed25519 PROPERTY SOVERSION 1)
+
+if(BUILD_BENCHMARK)
+    set(BENCHMARK_SOURCES src/benchmark.cpp)
+
+    add_executable(benchmark ${BENCHMARK_SOURCES})
+    target_link_libraries(benchmark ed25519)
+    set_property(TARGET benchmark PROPERTY OUTPUT_NAME "benchmark")
+endif()
 
 foreach(flag_var
         CMAKE_C_FLAGS CMAKE_C_FLAGS_DEBUG CMAKE_C_FLAGS_RELEASE
@@ -115,4 +135,5 @@ foreach(flag_var
         CMAKE_CXX_FLAGS CMAKE_CXX_FLAGS_DEBUG CMAKE_CXX_FLAGS_RELEASE
         CMAKE_CXX_FLAGS_MINSIZEREL CMAKE_CXX_FLAGS_RELWITHDEBINFO)
     string(REGEX REPLACE "/RTC[^ ]*" "" ${flag_var} "${${flag_var}}")
+    string(REGEX REPLACE "/Od" "" ${flag_var} "${${flag_var}}")
 endforeach(flag_var)
