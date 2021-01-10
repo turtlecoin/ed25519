@@ -42,6 +42,6 @@ For more information, please refer to <http://unlicense.org/>
 #include "ge_p3_to_cached.h"
 #include "negative.h"
 
-void ge_scalarmult(ge_p2 *r, const unsigned char *a, const ge_p3 *A);
+void ge_scalarmult(ge_p1p1 *t, const unsigned char *a, const ge_p3 *A);
 
 #endif // ED25519_GE_SCALARMULT_H

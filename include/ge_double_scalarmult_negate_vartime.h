@@ -36,7 +36,7 @@ For more information, please refer to <http://unlicense.org/>
 #include "slide.h"
 
 void ge_double_scalarmult_negate_vartime(
-    ge_p2 *r,
+    ge_p1p1 *t,
     const unsigned char *a,
     const ge_p3 *A,
     const unsigned char *b,

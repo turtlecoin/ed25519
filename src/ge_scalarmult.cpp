@@ -37,12 +37,11 @@ A is a public point
 Preconditions:
   a[31] <= 127
 */
-void ge_scalarmult(ge_p2 *r, const unsigned char *a, const ge_p3 *A)
+void ge_scalarmult(ge_p1p1 *t, const unsigned char *a, const ge_p3 *A)
 {
     signed char e[64];
     int carry, carry2, i;
     ge_cached Ai[8]; /* 1 * A, 2 * A, ..., 8 * A */
-    ge_p1p1 t;
     ge_p3 u;
 
     carry = 0; /* 0..1 */
@@ -62,26 +61,28 @@ void ge_scalarmult(ge_p2 *r, const unsigned char *a, const ge_p3 *A)
     ge_p3_to_cached(&Ai[0], A);
     for (i = 0; i < 7; i++)
     {
-        ge_add(&t, A, &Ai[i]);
-        ge_p1p1_to_p3(&u, &t);
+        ge_add(t, A, &Ai[i]);
+        ge_p1p1_to_p3(&u, t);
         ge_p3_to_cached(&Ai[i + 1], &u);
     }
 
-    ge_p2_0(r);
+    ge_p2 r;
+
+    ge_p2_0(&r);
     for (i = 63; i >= 0; i--)
     {
         signed char b = e[i];
         unsigned char bnegative = negative(b);
         unsigned char babs = b - (((-bnegative) & b) << 1);
         ge_cached cur, minuscur;
-        ge_p2_dbl(&t, r);
-        ge_p1p1_to_p2(r, &t);
-        ge_p2_dbl(&t, r);
-        ge_p1p1_to_p2(r, &t);
-        ge_p2_dbl(&t, r);
-        ge_p1p1_to_p2(r, &t);
-        ge_p2_dbl(&t, r);
-        ge_p1p1_to_p3(&u, &t);
+        ge_p2_dbl(t, &r);
+        ge_p1p1_to_p2(&r, t);
+        ge_p2_dbl(t, &r);
+        ge_p1p1_to_p2(&r, t);
+        ge_p2_dbl(t, &r);
+        ge_p1p1_to_p2(&r, t);
+        ge_p2_dbl(t, &r);
+        ge_p1p1_to_p3(&u, t);
         ge_cached_0(&cur);
         ge_cached_cmov(&cur, &Ai[0], equal(babs, 1));
         ge_cached_cmov(&cur, &Ai[1], equal(babs, 2));
@@ -96,7 +97,7 @@ void ge_scalarmult(ge_p2 *r, const unsigned char *a, const ge_p3 *A)
         fe_copy(minuscur.Z, cur.Z);
         fe_neg(minuscur.T2d, cur.T2d);
         ge_cached_cmov(&cur, &minuscur, bnegative);
-        ge_add(&t, &u, &cur);
-        ge_p1p1_to_p2(r, &t);
+        ge_add(t, &u, &cur);
+        ge_p1p1_to_p2(&r, t);
     }
 }

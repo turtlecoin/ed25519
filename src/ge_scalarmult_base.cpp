@@ -827,11 +827,10 @@ Preconditions:
   a[31] <= 127
 */
 
-void ge_scalarmult_base(ge_p3 *h, const unsigned char *a)
+void ge_scalarmult_base(ge_p1p1 *r, const unsigned char *a)
 {
     signed char e[64];
     signed char carry;
-    ge_p1p1 r;
     ge_p2 s;
     ge_precomp t;
     int i;
@@ -855,27 +854,29 @@ void ge_scalarmult_base(ge_p3 *h, const unsigned char *a)
     e[63] += carry;
     /* each e[i] is between -8 and 8 */
 
-    ge_p3_0(h);
+    ge_p3 h;
+
+    ge_p3_0(&h);
     for (i = 1; i < 64; i += 2)
     {
         select(&t, i / 2, e[i]);
-        ge_madd(&r, h, &t);
-        ge_p1p1_to_p3(h, &r);
+        ge_madd(r, &h, &t);
+        ge_p1p1_to_p3(&h, r);
     }
 
-    ge_p3_dbl(&r, h);
-    ge_p1p1_to_p2(&s, &r);
-    ge_p2_dbl(&r, &s);
-    ge_p1p1_to_p2(&s, &r);
-    ge_p2_dbl(&r, &s);
-    ge_p1p1_to_p2(&s, &r);
-    ge_p2_dbl(&r, &s);
-    ge_p1p1_to_p3(h, &r);
+    ge_p3_dbl(r, &h);
+    ge_p1p1_to_p2(&s, r);
+    ge_p2_dbl(r, &s);
+    ge_p1p1_to_p2(&s, r);
+    ge_p2_dbl(r, &s);
+    ge_p1p1_to_p2(&s, r);
+    ge_p2_dbl(r, &s);
+    ge_p1p1_to_p3(&h, r);
 
     for (i = 0; i < 64; i += 2)
     {
         select(&t, i / 2, e[i]);
-        ge_madd(&r, h, &t);
-        ge_p1p1_to_p3(h, &r);
+        ge_madd(r, &h, &t);
+        ge_p1p1_to_p3(&h, r);
     }
 }

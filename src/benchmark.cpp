@@ -25,14 +25,11 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <http://unlicense.org/>
 */
 
+#include "ed25519.h"
+
 #include <chrono>
 #include <iomanip>
 #include <iostream>
-
-extern "C"
-{
-#include "ed25519.h"
-}
 
 #define PERFORMANCE_ITERATIONS 5000
 
@@ -59,7 +56,7 @@ void benchmark(T &&function, const std::string &functionName, uint64_t iteration
 
     auto timePer = elapsedTime / iterations;
 
-    std::cout << "  " << std::setprecision(5) << std::setw(10) << timePer / 1000.0 << " ms" << std::endl;
+    std::cout << "  " << std::fixed << std::setprecision(3) << std::setw(5) << timePer / 1000.0 << " ms" << std::endl;
 }
 
 int main()
@@ -70,27 +67,60 @@ int main()
                            0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66,
                            0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66, 0x66};
 
+    const uint8_t H[32] = {0xdd, 0x2a, 0xf5, 0xc2, 0x8a, 0xcc, 0xdc, 0x50, 0xc8, 0xbc, 0x4e,
+                           0x15, 0x99, 0x12, 0x82, 0x3a, 0x87, 0x87, 0xc1, 0x18, 0x52, 0x97,
+                           0x74, 0x5f, 0xb2, 0x30, 0xe2, 0x64, 0x6c, 0xd7, 0x7e, 0xf6};
+
     const uint8_t scalar[32] = {0x31, 0x3b, 0x08, 0x3f, 0x84, 0x28, 0x2b, 0x00, 0xb9, 0xc8, 0x4f,
                                 0x4c, 0xf4, 0x39, 0x24, 0xf6, 0x61, 0x27, 0xf5, 0xd2, 0x77, 0x2f,
                                 0xdf, 0x36, 0x11, 0x09, 0x56, 0xa8, 0xda, 0xd5, 0x98, 0x04};
 
-    ge_p3 G_point3;
+    if (sc_check(reinterpret_cast<const unsigned char *>(&scalar)) != 0)
+    {
+        std::cout << "Invalid scalar detection in test scalar" << std::endl;
 
-    ge_p2 G_point2;
+        return 1;
+    }
 
-    ge_cached G_cached;
+    if (sc_check(reinterpret_cast<const unsigned char *>(&G)) == 0)
+    {
+        std::cout << "Invalid scalar detection in test point" << std::endl;
 
-    ge_p1p1 G_p1p1;
+        return 1;
+    }
+
+    ge_p3 G_point3, H_point3;
+
+    ge_p2 G_point2, H_point2;
+
+    ge_cached G_cached, H_cached;
+
+    ge_p1p1 G_p1p1, H_p1p1;
 
     ge_frombytes_negate_vartime(&G_point3, G);
 
+    ge_frombytes_negate_vartime(&H_point3, H);
+
     ge_fromfe_frombytes_negate_vartime(&G_point2, G);
+
+    ge_fromfe_frombytes_negate_vartime(&H_point2, H);
 
     ge_p3_to_cached(&G_cached, &G_point3);
 
+    ge_p3_to_cached(&H_cached, &H_point3);
+
     ge_add(&G_p1p1, &G_point3, &G_cached);
 
+    ge_add(&H_p1p1, &H_point3, &H_cached);
+
     std::cout << "Point Operations" << std::endl << std::endl;
+
+    if (H_point3 == G_point3 || H_point2 == G_point2 || H_cached == G_cached || H_p1p1 == G_p1p1)
+    {
+        std::cout << "Invalid point comparison" << std::endl;
+
+        return 1;
+    }
 
     benchmark(
         [&G]() {
@@ -141,6 +171,14 @@ int main()
         "ge_tobytes");
 
     benchmark(
+        [&G_point2]() {
+            ge_p3 point;
+
+            ge_p2_to_p3(&point, &G_point2);
+        },
+        "ge_p2_to_p3");
+
+    benchmark(
         [&G_p1p1]() {
             ge_p2 point;
 
@@ -186,7 +224,7 @@ int main()
 
             ge_p2_dbl(&point, &G_point2);
         },
-        "ge_p3_dbl");
+        "ge_p2_dbl");
 
     benchmark(
         [&G_point3]() {
@@ -198,7 +236,7 @@ int main()
 
     benchmark(
         [&scalar]() {
-            ge_p3 point;
+            ge_p1p1 point;
 
             ge_scalarmult_base(&point, scalar);
         },
@@ -206,7 +244,7 @@ int main()
 
     benchmark(
         [&G_point3, &scalar]() {
-            ge_p2 point;
+            ge_p1p1 point;
 
             ge_scalarmult(&point, scalar, &G_point3);
         },
@@ -214,7 +252,7 @@ int main()
 
     benchmark(
         [&G_point3, &scalar]() {
-            ge_p2 point;
+            ge_p1p1 point;
 
             ge_double_scalarmult_base_negate_vartime(&point, scalar, &G_point3, scalar);
         },
@@ -222,7 +260,7 @@ int main()
 
     benchmark(
         [&G_point3, &scalar, &G_cached]() {
-            ge_p2 point;
+            ge_p1p1 point;
 
             ge_double_scalarmult_negate_vartime(&point, scalar, &G_point3, scalar, &G_cached);
         },
@@ -271,4 +309,6 @@ int main()
         "sc_mulsub");
 
     benchmark([&scalar]() { sc_reduce32((unsigned char *)&scalar); }, "sc_reduce32");
+
+    benchmark([&scalar]() { sc_check((unsigned char *)&scalar); }, "sc_check");
 }

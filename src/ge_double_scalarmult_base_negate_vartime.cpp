@@ -61,12 +61,11 @@ where a = a[0]+256*a[1]+...+256^31 a[31].
 and b = b[0]+256*b[1]+...+256^31 b[31].
 B is the Ed25519 base point (x,4/5) with x positive.
 */
-void ge_double_scalarmult_base_negate_vartime(ge_p2 *r, const unsigned char *a, const ge_p3 *A, const unsigned char *b)
+void ge_double_scalarmult_base_negate_vartime(ge_p1p1 *t, const unsigned char *a, const ge_p3 *A, const unsigned char *b)
 {
     signed char aslide[256];
     signed char bslide[256];
     ge_dsmp Ai; /* A, 3A, 5A, 7A, 9A, 11A, 13A, 15A */
-    ge_p1p1 t;
     ge_p3 u;
     int i;
 
@@ -75,7 +74,9 @@ void ge_double_scalarmult_base_negate_vartime(ge_p2 *r, const unsigned char *a, 
 
     ge_dsm_precomp(Ai, A);
 
-    ge_p2_0(r);
+    ge_p2 r;
+
+    ge_p2_0(&r);
 
     for (i = 255; i >= 0; --i)
     {
@@ -85,30 +86,30 @@ void ge_double_scalarmult_base_negate_vartime(ge_p2 *r, const unsigned char *a, 
 
     for (; i >= 0; --i)
     {
-        ge_p2_dbl(&t, r);
+        ge_p2_dbl(t, &r);
 
         if (aslide[i] > 0)
         {
-            ge_p1p1_to_p3(&u, &t);
-            ge_add(&t, &u, &Ai[aslide[i] / 2]);
+            ge_p1p1_to_p3(&u, t);
+            ge_add(t, &u, &Ai[aslide[i] / 2]);
         }
         else if (aslide[i] < 0)
         {
-            ge_p1p1_to_p3(&u, &t);
-            ge_sub(&t, &u, &Ai[(-aslide[i]) / 2]);
+            ge_p1p1_to_p3(&u, t);
+            ge_sub(t, &u, &Ai[(-aslide[i]) / 2]);
         }
 
         if (bslide[i] > 0)
         {
-            ge_p1p1_to_p3(&u, &t);
-            ge_madd(&t, &u, &ge_Bi[bslide[i] / 2]);
+            ge_p1p1_to_p3(&u, t);
+            ge_madd(t, &u, &ge_Bi[bslide[i] / 2]);
         }
         else if (bslide[i] < 0)
         {
-            ge_p1p1_to_p3(&u, &t);
-            ge_msub(&t, &u, &ge_Bi[(-bslide[i]) / 2]);
+            ge_p1p1_to_p3(&u, t);
+            ge_msub(t, &u, &ge_Bi[(-bslide[i]) / 2]);
         }
 
-        ge_p1p1_to_p2(r, &t);
+        ge_p1p1_to_p2(&r, t);
     }
 }

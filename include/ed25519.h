@@ -61,6 +61,7 @@ For more information, please refer to <http://unlicense.org/>
 #include "ge_p1p1_to_p3.h"
 #include "ge_p2_0.h"
 #include "ge_p2_dbl.h"
+#include "ge_p2_to_p3.h"
 #include "ge_p3_0.h"
 #include "ge_p3_dbl.h"
 #include "ge_p3_to_cached.h"

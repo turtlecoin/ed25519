@@ -42,6 +42,6 @@ For more information, please refer to <http://unlicense.org/>
 #include "ge_precomp_cmov.h"
 #include "negative.h"
 
-void ge_scalarmult_base(ge_p3 *h, const unsigned char *a);
+void ge_scalarmult_base(ge_p1p1 *r, const unsigned char *a);
 
 #endif // ED25519_GE_SCALARMULT_BASE_H

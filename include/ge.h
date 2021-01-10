@@ -30,42 +30,99 @@ For more information, please refer to <http://unlicense.org/>
 
 #include "fe.h"
 
-typedef struct
+#include <cstring>
+
+typedef struct GeP2
 {
-    fe X;
-    fe Y;
-    fe Z;
+    bool operator==(const GeP2 &other) const
+    {
+        return memcmp(X, other.X, sizeof(X)) == 0 && memcmp(Y, other.Y, sizeof(Y)) == 0
+               && memcmp(Z, other.Z, sizeof(Z)) == 0;
+    }
+
+    bool operator!=(const GeP2 &other) const
+    {
+        return !(*this == other);
+    }
+
+    fe X = {0};
+    fe Y = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    fe Z = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 } ge_p2;
 
-typedef struct
+typedef struct GeP3
 {
-    fe X;
-    fe Y;
-    fe Z;
-    fe T;
+    bool operator==(const GeP3 &other) const
+    {
+        return memcmp(X, other.X, sizeof(X)) == 0 && memcmp(Y, other.Y, sizeof(Y)) == 0
+               && memcmp(Z, other.Z, sizeof(Z)) == 0 && memcmp(T, other.T, sizeof(T)) == 0;
+    }
+
+    bool operator!=(const GeP3 &other) const
+    {
+        return !(*this == other);
+    }
+
+    fe X = {0};
+    fe Y = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    fe Z = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    fe T = {0};
 } ge_p3;
 
-typedef struct
+typedef struct GeP1P1
 {
-    fe X;
-    fe Y;
-    fe Z;
-    fe T;
+    bool operator==(const GeP1P1 &other) const
+    {
+        return memcmp(X, other.X, sizeof(X)) == 0 && memcmp(Y, other.Y, sizeof(Y)) == 0
+               && memcmp(Z, other.Z, sizeof(Z)) == 0 && memcmp(T, other.T, sizeof(T)) == 0;
+    }
+
+    bool operator!=(const GeP1P1 &other) const
+    {
+        return !(*this == other);
+    }
+
+    fe X = {0};
+    fe Y = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    fe Z = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    fe T = {0};
 } ge_p1p1;
 
-typedef struct
+typedef struct GePrecomp
 {
-    fe yplusx;
-    fe yminusx;
-    fe xy2d;
+    bool operator==(const GePrecomp &other) const
+    {
+        return memcmp(yplusx, other.yplusx, sizeof(yplusx)) == 0 && memcmp(yminusx, other.yminusx, sizeof(yminusx)) == 0
+               && memcmp(xy2d, other.xy2d, sizeof(xy2d)) == 0;
+    }
+
+    bool operator!=(const GePrecomp &other) const
+    {
+        return !(*this == other);
+    }
+
+    fe yplusx = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    fe yminusx = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    fe xy2d = {0};
 } ge_precomp;
 
-typedef struct
+typedef struct GeCached
 {
-    fe YplusX;
-    fe YminusX;
-    fe Z;
-    fe T2d;
+    bool operator==(const GeCached &other) const
+    {
+        return memcmp(YplusX, other.YplusX, sizeof(YplusX)) == 0 && memcmp(YminusX, other.YminusX, sizeof(YminusX)) == 0
+               && memcmp(Z, other.Z, sizeof(Z)) == 0 && memcmp(T2d, other.T2d, sizeof(T2d)) == 0;
+    }
+
+    bool operator!=(const GeCached &other) const
+    {
+        return !(*this == other);
+    }
+
+    fe YplusX = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    fe YminusX = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    fe Z = {1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    fe T2d = {0};
 } ge_cached;
 
 typedef ge_cached ge_dsmp[8];

@@ -27,16 +27,15 @@ For more information, please refer to <http://unlicense.org/>
 
 #include "sc_check.h"
 
+#include <cstring>
+
 int sc_check(const unsigned char *s)
 {
-    int64_t t[8];
-    int i;
+    unsigned char check[32];
 
-    for (i = 0; i < 8; i++)
-    {
-        t[i] = load_4(s + (i * 4));
-    }
+    std::memmove(check, s, sizeof(check));
 
-    return (
-        int)((signum(1559614444 - t[0]) + (signum(1477600026 - t[1]) << 1) + (signum(2734136534 - t[2]) << 2) + (signum(350157278 - t[3]) << 3) + (signum(-t[4]) << 4) + (signum(-t[5]) << 5) + (signum(-t[6]) << 6) + (signum(268435456 - t[7]) << 7)) >> 8);
+    sc_reduce32(check);
+
+    return memcmp(check, s, sizeof(check));
 }
