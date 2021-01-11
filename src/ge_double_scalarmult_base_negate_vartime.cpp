@@ -61,7 +61,11 @@ where a = a[0]+256*a[1]+...+256^31 a[31].
 and b = b[0]+256*b[1]+...+256^31 b[31].
 B is the Ed25519 base point (x,4/5) with x positive.
 */
-void ge_double_scalarmult_base_negate_vartime(ge_p1p1 *t, const unsigned char *a, const ge_p3 *A, const unsigned char *b)
+void ge_double_scalarmult_base_negate_vartime(
+    ge_p1p1 *t,
+    const unsigned char *a,
+    const ge_p3 *A,
+    const unsigned char *b)
 {
     signed char aslide[256];
     signed char bslide[256];

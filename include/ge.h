@@ -129,7 +129,8 @@ typedef struct GeCached
 
 typedef ge_cached ge_dsmp[8];
 
-namespace std {
+namespace std
+{
     inline ostream &operator<<(ostream &os, const ge_p2 &value)
     {
         os << "ge_p2: " << std::endl;
@@ -254,6 +255,6 @@ namespace std {
 
         return os;
     }
-}
+} // namespace std
 
 #endif // ED25519_GE_H

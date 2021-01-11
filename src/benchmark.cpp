@@ -256,7 +256,8 @@ int main()
             uint8_t bytes[32];
 
             donna128_scalarmult(bytes, scalar, G);
-        }, "donna128_scalarmult");
+        },
+        "donna128_scalarmult");
 #endif
 
     benchmark(
