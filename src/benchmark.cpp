@@ -155,6 +155,14 @@ int main()
         "ge_p3_to_cached");
 
     benchmark(
+        [&G_point3]() {
+            ge_dsmp point;
+
+            ge_dsm_precomp(point, &G_point3);
+        },
+        "ge_dsm_precomp");
+
+    benchmark(
         [&G]() {
             ge_p2 point;
 
