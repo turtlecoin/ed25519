@@ -30,25 +30,13 @@ For more information, please refer to <http://unlicense.org/>
 
 #if defined __SIZEOF_INT128__ && defined __USE_64BIT__
 #include "donna128_scalarmult.h"
+#include "ge_add.h"
+#include "ge_frombytes_negate_vartime.h"
+#include "ge_p3_tobytes.h"
 #endif
 
-#include "equal.h"
-#include "fe_copy.h"
-#include "fe_neg.h"
 #include "ge.h"
-#include "ge_add.h"
-#include "ge_cached_0.h"
-#include "ge_cached_cmov.h"
-#include "ge_frombytes_negate_vartime.h"
-#include "ge_p1p1_to_p2.h"
-#include "ge_p1p1_to_p3.h"
-#include "ge_p2_0.h"
-#include "ge_p2_dbl.h"
-#include "ge_p3_to_cached.h"
-#include "ge_p3_tobytes.h"
-#include "negative.h"
-
-void ref10_scalarmult(ge_p1p1 *r, const unsigned char *a, const ge_p3 *A);
+#include "ref10_scalarmult.h"
 
 #if defined __SIZEOF_INT128__ && defined __USE_64BIT__
 void donna128_scalarmult_wrapper(ge_p1p1 *r, const unsigned char *a, const ge_p3 *A);

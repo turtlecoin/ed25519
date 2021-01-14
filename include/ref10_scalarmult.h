@@ -25,31 +25,23 @@ OTHER DEALINGS IN THE SOFTWARE.
 For more information, please refer to <http://unlicense.org/>
 */
 
-#include "ge_scalarmult.h"
+#ifndef ED25519_REF10_SCALARMULT_H
+#define ED25519_REF10_SCALARMULT_H
 
-#if defined __SIZEOF_INT128__ && defined __USE_64BIT__
-void donna128_scalarmult_wrapper(ge_p1p1 *r, const unsigned char *a, const ge_p3 *A)
-{
-    uint8_t result_bytes[32];
+#include "equal.h"
+#include "fe_copy.h"
+#include "fe_neg.h"
+#include "ge.h"
+#include "ge_add.h"
+#include "ge_cached_0.h"
+#include "ge_cached_cmov.h"
+#include "ge_p1p1_to_p2.h"
+#include "ge_p1p1_to_p3.h"
+#include "ge_p2_0.h"
+#include "ge_p2_dbl.h"
+#include "ge_p3_to_cached.h"
+#include "negative.h"
 
-    uint8_t point[32];
+void ref10_scalarmult(ge_p1p1 *r, const unsigned char *a, const ge_p3 *A);
 
-    // convert the p3 to bytes as donna128 works with bytes
-    ge_p3_tobytes(point, A);
-
-    // perform the calc
-    donna128_scalarmult(result_bytes, a, point);
-
-    ge_p3 result_p3;
-
-    // donna returns bytes, but we need a p3
-    ge_frombytes_negate_vartime(&result_p3, result_bytes);
-
-    ge_p1p1 result_p1p1;
-
-    ge_cached zero;
-
-    // quick hack -- add a zero point to the point to get a p1p1
-    ge_add(r, &result_p3, &zero);
-}
-#endif
+#endif // ED25519_REF10_SCALARMULT_H

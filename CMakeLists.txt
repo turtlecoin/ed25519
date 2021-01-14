@@ -108,6 +108,7 @@ set(ED25519_SRC
     src/load_3.cpp
     src/load_4.cpp
     src/negative.cpp
+    src/ref10_scalarmult.cpp
     src/sc_0.cpp
     src/sc_add.cpp
     src/sc_check.cpp
