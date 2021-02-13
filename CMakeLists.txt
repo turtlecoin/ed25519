@@ -55,7 +55,7 @@ if(NOT MSVC)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -O3")
 endif()
 
-include_directories(include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 set(ED25519_SRC
     src/donna128_scalarmult.cpp
@@ -124,6 +124,7 @@ set(ED25519_SRC
 )
 
 add_library(ed25519 STATIC ${ED25519_SRC})
+target_include_directories(ed25519 PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 if(BUILD_BENCHMARK)
     set(BENCHMARK_SOURCES src/benchmark.cpp)
