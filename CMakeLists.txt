@@ -1,11 +1,5 @@
 cmake_minimum_required(VERSION 2.8.12)
 
-find_program(CCACHE_PROGRAM ccache)
-if(CCACHE_PROGRAM)
-    message(STATUS "ED25519: Found ccache package... Activating...")
-    set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
-endif()
-
 if(DEFINED CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE ${CMAKE_BUILD_TYPE} CACHE STRING "Choose the type of build, options are: Debug, Release, RelWithDebInfo")
 else()
@@ -30,6 +24,14 @@ if(CMAKE_VERSION VERSION_LESS 3.0)
 else()
     cmake_policy(SET CMP0048 NEW)
     project(ed25519 VERSION "${LIB_VERSION_STRING}" LANGUAGES CXX)
+endif()
+
+if(NOT MSVC)
+    find_program(CCACHE_PROGRAM ccache)
+    if(CCACHE_PROGRAM)
+        message(STATUS "Found ccache package... Activating...")
+        set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE "${CCACHE_PROGRAM}")
+    endif()
 endif()
 
 if(CMAKE_SIZEOF_VOID_P EQUAL 8)
